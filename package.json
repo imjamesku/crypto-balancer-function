@@ -17,21 +17,28 @@
     "fix": "gts fix",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "start": "yaml2json .env.local.yaml >.env.json && env-cmd -r ./.env.json functions-framework --source=build/src/ --target=helloWorld",
+    "start": "yaml2json .env.local.yaml >.env.json && env-cmd -r ./.env.json functions-framework --source=build/src/ --target=rebalance",
     "watch": "concurrently \"tsc -w\" \"nodemon --watch ./build/ --exec npm run start\"",
-    "deploy": "gcloud functions deploy rebalance --trigger-http --runtime=nodejs14 --entry-point helloWorld --env-vars-file .env.yaml"
+    "deploy": "gcloud functions deploy rebalance --trigger-http --runtime=nodejs14 --entry-point rebalance --env-vars-file .env.yaml"
+  },
+  "engines": {
+    "node": "14"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/jest": "^27.5.0",
     "@types/node": "^14.11.2",
     "concurrently": "^7.1.0",
     "env-cmd": "^10.1.0",
     "gts": "^3.1.0",
+    "jest": "^28.1.0",
     "nodemon": "^2.0.16",
-    "typescript": "^4.0.3",
+    "ts-jest": "^28.0.1",
+    "typescript": "^4.6.4",
     "yaml2json": "^1.0.2"
   },
   "dependencies": {
-    "@google-cloud/functions-framework": "^3.1.1"
+    "@google-cloud/functions-framework": "^3.1.1",
+    "axios": "^0.27.2"
   }
 }
