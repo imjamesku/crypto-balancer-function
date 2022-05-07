@@ -8,7 +8,7 @@
 
 ## Deployment
 
-1. Create or update .env.yaml (same variable names as .env.local.yaml)
+1. Create or update .env.yaml (same variable names as .env.local.yaml) with `ENV` equals `"PROD"`
 2. Deploy: `npm run deploy`
 
 References:
