@@ -7,7 +7,9 @@ import {getLatestMarketCapList} from '../../api/coinmarketcap/listings';
 import {sleep} from '../../utils/sleep';
 import {OrderOptions, OrderSide, OrderType} from '../../api/bybit/types';
 import {TradingRestrictions} from '../../data/TradingRestrictions/TradingRestrictions';
-import {CONFIG} from '../../config';
+import {CONFIG, TELEGRAM_CHAT_ID} from '../../config';
+import {sendMessage} from '../../api/telegram/bot';
+import axios from 'axios';
 
 interface WalletBalance {
   coinBalances: {
@@ -317,6 +319,16 @@ export async function getCoinsAvailableForTrading(stableCoinSymbol: string) {
   }));
 }
 
+async function sendNotification(markdownContent: string) {
+  return await sendMessage({
+    chat_id: TELEGRAM_CHAT_ID,
+    text: markdownContent,
+  }).catch(err => {
+    console.error(err);
+    throw err;
+  });
+}
+
 export async function rebalanceCoins() {
   const {
     EXCLUDE_COINS,
@@ -386,4 +398,30 @@ export async function rebalanceCoins() {
     ordersToMake,
     orderResArr,
   };
+}
+
+export async function tryRebalanceCoins() {
+  try {
+    const res = await rebalanceCoins();
+    console.log('Rebalacing done. results: ', res);
+    await sendNotification(
+      `Rebalacing done\\. orders made: \`\`\`json\n${JSON.stringify([
+        res?.orderResArr,
+      ]).substring(0, 3900)}\`\`\``
+    );
+    return res;
+    // await sendNotification(`test message`);
+  } catch (error) {
+    console.error(error);
+    if (axios.isAxiosError(error)) {
+      await sendNotification(
+        `error occurred\\. error: ${error.message}. response message: ${error.response?.data} `
+      );
+    } else {
+      await sendNotification(
+        `error occurred\\. ${JSON.stringify(error).substring(0, 3900)}`
+      );
+    }
+    throw error;
+  }
 }

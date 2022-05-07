@@ -13,6 +13,12 @@ export const BYBIT_BASE_URL = IS_DEV_ENV
   ? 'https://api-testnet.bybit.com'
   : 'https://api.bybit.com';
 
+// telegram
+export const TELEGRAM_CHAT_ID = '5159888149';
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN as string;
+export const TELEGRAM_BASE_URL =
+  'https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN;
+
 export const BYBIT_API_KEY = process.env.BYBIT_API_KEY as string;
 export const BYBIT_SECRET_KEY = process.env.BYBIT_SECRET_KEY as string;
 
