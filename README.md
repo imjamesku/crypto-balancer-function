@@ -1,11 +1,15 @@
-## Deployment
+## Setup
 
 1. Install gcloud: https://cloud.google.com/sdk/docs/install
 2. Login: `gcloud auth login`
 3. Create configuration: `gcloud config configurations create <CONFIG_NAME>`
 4. Set Project & account `gcloud set project <YOUR_GCP_PROJECT_ID>`, `gcloud set account <YOUR_GCP_ACCOUNT>`
-5. Create or update .env.yaml (same variable names as .env.local.yaml)
-6. Deploy: `npm run deploy`
+5. `npm install`
+
+## Deployment
+
+1. Create or update .env.yaml (same variable names as .env.local.yaml)
+2. Deploy: `npm run deploy`
 
 References:
 
@@ -15,7 +19,7 @@ References:
 ## Local Development
 
 1. Update .env.local.yaml
-   Run `npm run watch`
+2. Run `npm run watch`
 
 References:
 
