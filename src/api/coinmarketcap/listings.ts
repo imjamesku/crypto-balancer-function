@@ -1,6 +1,7 @@
 import ins from './instance';
 import {ListingResponse} from './types';
 
+//https://coinmarketcap.com/api/documentation/v1/#operation/getV1CryptocurrencyListingsLatest
 export async function getLatestMarketCapList({
   limit, // number of currencies to query
 }: {

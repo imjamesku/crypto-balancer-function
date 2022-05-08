@@ -338,15 +338,17 @@ export async function rebalanceCoins() {
     TEST_RUN,
   } = CONFIG;
 
-  const priceMap = await getAvailableCoinPrices(STABLE_COIN);
-  const walletBalance = await getWalletBalance(priceMap);
+  const priceMap = await getAvailableCoinPrices(STABLE_COIN); //1. 取得能夠交易的幣種以及價錢
+  const walletBalance = await getWalletBalance(priceMap); //2. 取得目前錢包中的幣，以及換成美金的價值
   const desiredBalance = await calculateDesiredCoinBalance(
+    //3. 計算根據coinmarketcap拿到的市場資料，算出的理想配置比例
     STABLE_RATIO,
     new Set(Object.keys(priceMap)),
     EXCLUDE_COINS,
     STABLE_COIN
   );
   const coinsToTrade = await calculateCoinsToTrade(
+    //4. 用剛剛拿到的錢包目前配置跟理想配置的差，算出需交易對
     STABLE_COIN,
     walletBalance,
     desiredBalance,
@@ -356,12 +358,14 @@ export async function rebalanceCoins() {
   console.log('coins to trade: ', coinsToTrade);
 
   const totalAbsTradeAmount = coinsToTrade.reduce(
+    // 5. 算出總交易額
     (partial, current) => partial + Math.abs(current.quoteAmount),
     0
   );
 
   const absTradeAmountRatio = totalAbsTradeAmount / walletBalance.totalUsdValue;
   if (absTradeAmountRatio < TRADE_THRESHOLD_RATIO) {
+    // 如果總交易量小於設定的門檻，就不繼續執行
     console.log('Total trading ratio too small. Return');
     return;
   }
@@ -373,6 +377,7 @@ export async function rebalanceCoins() {
     ])
   );
   const ordersToMake = await calculateActualOrdersToMake(
+    //6. 因為bybit上還有最小、最大交易量的限制，所以這邊要再進行一次過濾
     coinsToTrade,
     coinBalanceMap
   );
@@ -387,7 +392,7 @@ export async function rebalanceCoins() {
       ordersToMake,
     };
   }
-  const orderResArr = await placeOrders(ordersToMake);
+  const orderResArr = await placeOrders(ordersToMake); //實際執行訂單
   console.log(orderResArr);
 
   return {

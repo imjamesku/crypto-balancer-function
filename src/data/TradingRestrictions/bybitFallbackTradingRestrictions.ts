@@ -1,4 +1,5 @@
 // This is for when it is unable to get restrictions from api
+// https://help.bybit.com/hc/en-us/articles/4408709551129-Bybit-Spot-Trading-Rules
 export const fallBackTradingRestrictions = [
   {
     pair: '1INCHUSDT',
