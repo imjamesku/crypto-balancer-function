@@ -23,7 +23,7 @@ export const BYBIT_API_KEY = process.env.BYBIT_API_KEY as string;
 export const BYBIT_SECRET_KEY = process.env.BYBIT_SECRET_KEY as string;
 
 export const CONFIG = {
-  EXCLUDE_COINS: new Set(['USDC', 'BUSD']), // Do not put the stable coin to use in EXCLUDE_COINS
+  EXCLUDE_COINS: new Set(['USDC', 'BUSD', 'UST']), // Do not put the stable coin to use in EXCLUDE_COINS
   STABLE_COIN: 'USDT', // which stable coin to use
   STABLE_RATIO: 0.1, // ratio of asset to allocate in stable coin
   TRADE_THRESHOLD_RATIO: 0.05,

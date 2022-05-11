@@ -410,9 +410,9 @@ export async function tryRebalanceCoins() {
     const res = await rebalanceCoins();
     console.log('Rebalacing done. results: ', res);
     await sendNotification(
-      `Rebalacing done\\. orders made: \`\`\`json\n${JSON.stringify([
-        res?.orderResArr,
-      ]).substring(0, 3900)}\`\`\``
+      `Rebalacing done\\. orders made: \`\`\`json\n${JSON.stringify(
+        res?.orderResArr ?? []
+      ).substring(0, 3900)}\`\`\``
     );
     return res;
     // await sendNotification(`test message`);
