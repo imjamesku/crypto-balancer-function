@@ -10,6 +10,7 @@ import {TradingRestrictions} from '../../data/TradingRestrictions/TradingRestric
 import {CONFIG, TELEGRAM_CHAT_ID} from '../../config';
 import {sendMessage} from '../../api/telegram/bot';
 import axios from 'axios';
+import {round, roundDown} from '../../utils/rounding';
 
 interface WalletBalance {
   coinBalances: {
@@ -153,7 +154,7 @@ async function placeOrders(orders: Array<OrderOptions>) {
       qty,
       type: OrderType.market,
     });
-    orderResArr.push(res);
+    orderResArr.push({symbol, side, qty, ...res});
     if (res.ret_code == 0) {
       console.log('Succesfully place order: ', res);
       console.log('order info: ', {symbol, side, qty});
@@ -197,7 +198,7 @@ export async function calculateActualOrdersToMake(
       const toFixedDigits =
         tradingConstraintsForCoin.minPricePrecision.length - 2;
       side = OrderSide.buy;
-      qty = parseFloat(quoteAmount.toFixed(Math.min(toFixedDigits, 20)));
+      qty = round(quoteAmount, Math.min(toFixedDigits, 20));
       const [minTradeAmount, maxTradeAmount] = [
         parseFloat(tradingConstraintsForCoin.minTradeAmount),
         parseFloat(tradingConstraintsForCoin.maxTradeAmount),
@@ -222,8 +223,9 @@ export async function calculateActualOrdersToMake(
             type: OrderType.market,
           })
         );
-        const remainingQty = parseFloat(
-          (qty - quotient * maxTradeAmount).toFixed(Math.min(toFixedDigits, 20))
+        const remainingQty = round(
+          qty - quoteAmount * maxTradeAmount,
+          Math.min(toFixedDigits, 20)
         );
         if (remainingQty >= minTradeAmount) {
           ordersToMake.push({
@@ -252,7 +254,7 @@ export async function calculateActualOrdersToMake(
         symbol in walletCoinBalancesMap ? walletCoinBalancesMap[symbol] : 0;
       // if selling more than the amount in wallet, only sell the amount in wallet
       qty = -baseAmount > walletAmount ? walletAmount : -baseAmount;
-      qty = parseFloat(qty.toFixed(20));
+      qty = roundDown(qty, Math.min(toFixedDigits, 20)); // if round up, qty may exceed holding
       side = OrderSide.sell;
       const [minTradeQuantity, maxTradeQuantity] = [
         parseFloat(tradingConstraintsForCoin.minTradeQuantity),
@@ -279,10 +281,10 @@ export async function calculateActualOrdersToMake(
             type: OrderType.market,
           })
         );
-        const remainingQty = parseFloat(
-          (qty - quotient * maxTradeQuantity).toFixed(
-            Math.min(toFixedDigits, 20)
-          )
+
+        const remainingQty = round(
+          qty - quoteAmount * maxTradeQuantity,
+          Math.min(toFixedDigits, 20)
         );
         if (remainingQty >= minTradeQuantity) {
           ordersToMake.push({
