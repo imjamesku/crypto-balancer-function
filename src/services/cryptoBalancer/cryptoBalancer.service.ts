@@ -34,10 +34,14 @@ async function getWalletBalance(
 ): Promise<WalletBalance> {
   const spotWalletBalanceRes = await getSpotWalletBalance();
   const coinBalances = spotWalletBalanceRes.result.balances.map(coinBalance => {
+    const value =
+      coinBalance.coinId in usdPriceMap
+        ? parseFloat(coinBalance.total) * usdPriceMap[coinBalance.coinId]
+        : 0;
     return {
       symbol: coinBalance.coinId,
       total: coinBalance.total,
-      usdValue: parseFloat(coinBalance.total) * usdPriceMap[coinBalance.coinId],
+      usdValue: value,
     };
   });
   const totalUsdValue = coinBalances.reduce(
@@ -399,6 +403,7 @@ export async function rebalanceCoins() {
 
   return {
     priceMap,
+    walletBalance,
     desiredBalance,
     coinsToTrade,
     tradeAmountRatio: absTradeAmountRatio,
