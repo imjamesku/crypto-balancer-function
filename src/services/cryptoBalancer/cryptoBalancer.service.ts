@@ -321,7 +321,7 @@ export async function getCoinsAvailableForTrading(stableCoinSymbol: string) {
   }));
 }
 
-async function sendNotification(markdownContent: string) {
+export async function sendNotification(markdownContent: string) {
   return await sendMessage({
     chat_id: TELEGRAM_CHAT_ID,
     text: markdownContent,
@@ -411,8 +411,9 @@ export async function tryRebalanceCoins() {
   try {
     const res = await rebalanceCoins();
     console.log('Rebalacing done. results: ', res);
+    await sendNotification('Rebalancing done\\.');
     await sendNotification(
-      `Rebalacing done\\. orders made: \`\`\`json\n${JSON.stringify(
+      `Orders made: \`\`\`json\n${JSON.stringify(
         res?.orderResArr ?? []
       ).substring(0, 3900)}\`\`\``
     );
@@ -420,6 +421,7 @@ export async function tryRebalanceCoins() {
     // await sendNotification(`test message`);
   } catch (error) {
     console.error(error);
+    sendNotification('An error occurred\\!'); //! and . must be escaped
     if (axios.isAxiosError(error)) {
       await sendNotification(
         `error occurred\\. error: ${error.message}. response message: ${error.response?.data} `
